@@ -1,0 +1,12 @@
+{
+  "name": "TOV — Push Images",
+  "id": "tov-design-system-push-images",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": ["figma"],
+  "documentAccess": "dynamic-page",
+  "networkAccess": {
+    "allowedDomains": ["https://tov-design-system.vercel.app"]
+  }
+}

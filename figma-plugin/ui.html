@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  :root { color-scheme: light; }
+  body {
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+    margin: 0;
+    padding: 16px;
+    color: #1a1a1a;
+    font-size: 12px;
+  }
+  h1 {
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0 0 12px;
+  }
+  #status {
+    color: #666;
+    margin-bottom: 4px;
+    min-height: 16px;
+  }
+  #debug {
+    color: #999;
+    font-size: 10px;
+    font-family: monospace;
+    margin-bottom: 12px;
+    word-break: break-all;
+  }
+  #results {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 260px;
+    overflow-y: auto;
+  }
+  .row {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    background: #f5f5f5;
+    line-height: 1.4;
+  }
+  .row.ok { background: #eafaf0; }
+  .row.err { background: #fdeeee; }
+  .dot { flex-shrink: 0; margin-top: 3px; width: 6px; height: 6px; border-radius: 50%; }
+  .dot.ok { background: #1b8a5a; }
+  .dot.err { background: #d34c4c; }
+  button {
+    margin-top: 12px;
+    width: 100%;
+    padding: 8px;
+    border: none;
+    border-radius: 6px;
+    background: #18181b;
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button:hover { background: #333; }
+</style>
+</head>
+<body>
+  <h1>TOV — Push Images</h1>
+  <div id="status">Starting…</div>
+  <div id="debug"></div>
+  <div id="results"></div>
+  <button id="run">Check again</button>
+
+  <script>
+    const statusEl = document.getElementById("status");
+    const debugEl = document.getElementById("debug");
+    const resultsEl = document.getElementById("results");
+
+    onmessage = (event) => {
+      const msg = event.data.pluginMessage;
+      if (!msg) return;
+
+      if (msg.type === "debug") {
+        debugEl.textContent = msg.text;
+      }
+      if (msg.type === "status") {
+        statusEl.textContent = msg.text;
+      }
+      if (msg.type === "error") {
+        statusEl.textContent = msg.text;
+        statusEl.style.color = "#d34c4c";
+      }
+      if (msg.type === "done") {
+        statusEl.textContent = msg.text;
+        statusEl.style.color = "#666";
+        resultsEl.innerHTML = "";
+        msg.results.forEach((r) => {
+          const row = document.createElement("div");
+          row.className = "row " + (r.ok ? "ok" : "err");
+          row.innerHTML = '<span class="dot ' + (r.ok ? "ok" : "err") + '"></span><span>' + r.message + "</span>";
+          resultsEl.appendChild(row);
+        });
+      }
+    };
+
+    document.getElementById("run").onclick = () => {
+      resultsEl.innerHTML = "";
+      parent.postMessage({ pluginMessage: { type: "run" } }, "*");
+    };
+  </script>
+</body>
+</html>

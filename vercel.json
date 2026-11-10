@@ -1,0 +1,3 @@
+{
+  "crons": [{ "path": "/api/figma-watch/cron", "schedule": "0 11 * * *" }]
+}
